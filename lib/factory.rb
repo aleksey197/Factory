@@ -32,9 +32,27 @@ class Factory
         attr_accessor(*parameters)
 
         define_method :initialize do |*arg|
+          raise ArgumentError, 'invalid argument size' if parameters.size < arg.size
+
           parameters.each_index do |index|
             instance_variable_set("@#{parameters[index]}", arg[index])
           end
+        end
+
+        define_method :[] do |argum|
+          if argum.is_a? Integer
+            return instance_variable_get instance_variables[argum]
+          end
+
+          instance_variable_get "@#{argum}"
+        end
+
+        define_method :[]= do |argum, value|
+          if argum.is_a? Integer
+            return instance_variable_set instance_variables[argum], value
+          end
+
+          instance_variable_set "@#{argum}", value
         end
 
         def each(&block)
